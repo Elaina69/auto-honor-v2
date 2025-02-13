@@ -17,12 +17,15 @@ if (!window.DataStore.has("Auto-Honor-V2")) {
     window.DataStore.set("Auto-Honor-V2-Mode", 0)
 }
 
+let honored = false
 let pageListenner = async (node: Element) => {
     const pagename = node.getAttribute("data-screen-name");
 
-    if (pagename === "rcp-fe-lol-honor" && window.DataStore.get("Auto-Honor-V2")) {
+    if (!honored && pagename === "rcp-fe-lol-honor" && window.DataStore.get("Auto-Honor-V2")) {
+        honored = true
         await main(window.DataStore.get("Auto-Honor-V2-Mode"))
     }
+    if (pagename === "rcp-fe-lol-champ-select") honored = false
 }
 
 let main = async (mode: number) => {

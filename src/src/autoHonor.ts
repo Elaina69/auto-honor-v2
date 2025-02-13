@@ -22,6 +22,7 @@ class AutoHonor extends FetchData {
     opponents: any[]
     all: any[]
     votesTime: number
+    honored: any[]
 
     constructor () {
         super();
@@ -30,6 +31,7 @@ class AutoHonor extends FetchData {
         this.allies = []
         this.opponents = []
         this.all = []
+        this.honored = []
         this.votesTime = 0
     }
 
@@ -44,11 +46,12 @@ class AutoHonor extends FetchData {
         this.allies = honorList.eligibleAllies
         this.opponents = honorList.eligibleOpponents
         this.all = allPlayerList
+        this.honored = honorList.honoredPlayers
+
+        console.log(honorList)
     }
 
     honor = async (mode: number) => {
-        let i = 0
-
         let honorPlayer = async (puuid: string) => {
             let body = {
                 "recipientPuuid": puuid,
@@ -64,34 +67,35 @@ class AutoHonor extends FetchData {
             });
         }
 
-        switch (mode) {
-            case 0:
-                log("Honoring allies..")
-                for (let player of this.allies) {
-                    await honorPlayer(player.puuid);
-                    i++
-                }
-                break;
-            case 1:
-                log("Honoring enermy...")
-                for (let player of this.opponents) {
-                    await honorPlayer(player.puuid);
-                    i++
-                }
-                break;
-            case 2: 
-                log("Honoring all...")
-                for (let player of this.all) {
-                    await honorPlayer(player.puuid);
-                    i++
-                }
-                break;
-            default:
-                log("Auto honor V2 is turn off.")
-                break;
+        if (this.honored.length == 0) {
+            switch (mode) {
+                case 0:
+                    log("Honoring allies..")
+                    for (let i = 0; i < this.votesTime; i++) {
+                        await honorPlayer(this.allies[i].puuid)
+                    }
+                    window.Toast.success(`Auto honored ${this.votesTime} player!`)
+                    break;
+                case 1:
+                    log("Honoring enermy...")
+                    for (let i = 0; i < this.votesTime; i++) {
+                        await honorPlayer(this.opponents[i].puuid)
+                    }
+                    window.Toast.success(`Auto honored ${this.votesTime} player!`)
+                    break;
+                case 2: 
+                    log("Honoring all...")
+                    let i = 0
+                    for (i = 0; i < this.all.length; i++) {
+                        await honorPlayer(this.all[i].puuid)
+                    }
+                    window.Toast.success(`Auto honored ${i} player!`)
+                    break;
+                default:
+                    log("Auto honor V2 is turn off.")
+                    break;
+            }
         }
-
-        window.Toast.success(`Auto honored ${i} player!`)
     }
 }  
 let autoHonor = new AutoHonor()
