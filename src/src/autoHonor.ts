@@ -1,4 +1,4 @@
-import { log } from "./log.ts"
+import { log, error } from "./log.ts"
 import utils from "./utils.ts"
 
 class FetchData {
@@ -77,29 +77,39 @@ class AutoHonor extends FetchData {
             switch (mode) {
                 case 0:
                     log("Honoring allies..")
-
-                    const team1HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-1");
                     
                     for (let i = 0; i < this.votesTime; i++) {
                         // await honorPlayer(this.allies[i].puuid)
                         // await utils.stop(500)
 
-                        await utils.stop(150)
-                        honorPlayerManually(team1HonorCards[i])
+                        try {
+                            await utils.stop(150)
+                            const team1HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-1");
+                            honorPlayerManually(team1HonorCards[i])
+                        }
+                        catch (err) {
+                            error("Failed to honor ally:", err)
+                            i = i - 1
+                        }
                     }
                     window.Toast.success(`Auto honored ${this.votesTime} player!`)
                     break;
                 case 1:
                     log("Honoring enermy...")
-
-                    let team2HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-2");
                     
                     for (let i = 0; i < this.votesTime; i++) {
                         // await honorPlayer(this.opponents[i].puuid)
                         // await utils.stop(500)
 
-                        await utils.stop(150)
-                        honorPlayerManually(team2HonorCards[i])
+                        try {
+                            await utils.stop(150)
+                            let team2HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-2");
+                            honorPlayerManually(team2HonorCards[i])
+                        }
+                        catch (err) {
+                            error("Failed to honor enemy:", err)
+                            i = i - 1
+                        }
                     }
                     window.Toast.success(`Auto honored ${this.votesTime} player!`)
                     break;

@@ -25,7 +25,7 @@ let main = async (mode: number) => {
    
     await autoHonor.getHonorList()
 
-    await utils.stop(1000)
+    // await utils.stop(1000)
     await autoHonor.honor(mode)
 
     log("Complete.")
