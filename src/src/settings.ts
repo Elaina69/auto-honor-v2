@@ -50,10 +50,10 @@ class Settings {
                     "id": 1,
                     "type": "Enermy"
                 },
-                {
-                    "id": 2,
-                    "type": "All"
-                },
+                // {
+                //     "id": 2,
+                //     "type": "All"
+                // },
             ]
         }
 
@@ -97,22 +97,22 @@ class Settings {
             }9999
         },500)
 
-        upl.observer.subscribeToElementCreation("#auto-honor-v2-warning_1", (element: any) => {
-            check = window.setInterval(() => {
-                if (window.DataStore.get("Auto-Honor-V2-Mode") == 2) {
-                    element.style.color = "red"
-                    element.textContent = "It may not auto close the honor screen, use at your own risk."
-                }
-                else {
-                    element.textContent = ""
-                }
-            })
-        })
+        // upl.observer.subscribeToElementCreation("#auto-honor-v2-warning_1", (element: any) => {
+        //     check = window.setInterval(() => {
+        //         if (window.DataStore.get("Auto-Honor-V2-Mode") == 2) {
+        //             element.style.color = "red"
+        //             element.textContent = "It may not auto close the honor screen, use at your own risk."
+        //         }
+        //         else {
+        //             element.textContent = ""
+        //         }
+        //     })
+        // })
 
-        upl.observer.subscribeToElementDeletion("#auto-honor-v2-warning_1", (element: any) => {
-            window.clearInterval(check)
-            log("Interval cleared")
-        })
+        // upl.observer.subscribeToElementDeletion("#auto-honor-v2-warning_1", (element: any) => {
+        //     window.clearInterval(check)
+        //     log("Interval cleared")
+        // })
     }
 }
 let settings = new Settings()

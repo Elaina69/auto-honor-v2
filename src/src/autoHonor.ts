@@ -1,4 +1,6 @@
 import { log } from "./log.ts"
+import utils from "./utils.ts"
+
 class FetchData {
     get = async (lcu: string) => {
         let data = (await fetch(lcu)).json()
@@ -67,30 +69,49 @@ class AutoHonor extends FetchData {
             });
         }
 
+        let honorPlayerManually = (honorCard: any) => {
+            honorCard.click();
+        }
+
         if (this.honored.length == 0) {
             switch (mode) {
                 case 0:
                     log("Honoring allies..")
+
+                    const team1HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-1");
+                    
                     for (let i = 0; i < this.votesTime; i++) {
-                        await honorPlayer(this.allies[i].puuid)
+                        // await honorPlayer(this.allies[i].puuid)
+                        // await utils.stop(500)
+
+                        await utils.stop(150)
+                        honorPlayerManually(team1HonorCards[i])
                     }
                     window.Toast.success(`Auto honored ${this.votesTime} player!`)
                     break;
                 case 1:
                     log("Honoring enermy...")
+
+                    let team2HonorCards = document.querySelectorAll(".vote-ceremony-player-card.team-2");
+                    
                     for (let i = 0; i < this.votesTime; i++) {
-                        await honorPlayer(this.opponents[i].puuid)
+                        // await honorPlayer(this.opponents[i].puuid)
+                        // await utils.stop(500)
+
+                        await utils.stop(150)
+                        honorPlayerManually(team2HonorCards[i])
                     }
                     window.Toast.success(`Auto honored ${this.votesTime} player!`)
                     break;
-                case 2: 
-                    log("Honoring all...")
-                    let i = 0
-                    for (i = 0; i < this.all.length; i++) {
-                        await honorPlayer(this.all[i].puuid)
-                    }
-                    window.Toast.success(`Auto honored ${i} player!`)
-                    break;
+                // case 2: 
+                //     log("Honoring all...")
+                //     let i = 0
+                //     for (i = 0; i < this.all.length; i++) {
+                //         await honorPlayer(this.all[i].puuid)
+                //         await utils.stop(500)
+                //     }
+                //     window.Toast.success(`Auto honored ${i} player!`)
+                //     break;
                 default:
                     log("Auto honor V2 is turn off.")
                     break;
