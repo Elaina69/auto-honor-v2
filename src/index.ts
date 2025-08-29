@@ -20,33 +20,36 @@ if (!window.DataStore.has("Auto-Honor-V2")) {
 
 let honored = false
 
-let main = async (mode: number) => {
-    log("Start running...")
-   
-    await autoHonor.getHonorList()
+let main = async (type: string) => {
+    if (!honored && window.DataStore.get("Auto-Honor-V2")) {
+        honored = true
 
-    // await utils.stop(1000)
-    await autoHonor.honor(mode)
+        log("Start running...")
 
-    log("Complete.")
+        await autoHonor.getHonorList()
+        await autoHonor.main(window.DataStore.get("Auto-Honor-V2-Mode"), type)
+
+        log("Complete.")
+    }
 }
 
 let pageListenner = async (node: Element) => {
     const pagename = node.getAttribute("data-screen-name");
 
-    // if (!honored && pagename === "rcp-fe-lol-honor" && window.DataStore.get("Auto-Honor-V2")) {
-    //     honored = true
-    //     await main(window.DataStore.get("Auto-Honor-V2-Mode"))
-    // }
     if (pagename === "rcp-fe-lol-champ-select") honored = false
 }
 
 let observeHonorScreen = () => {
     upl.observer.subscribeToElementCreation(".vote-ceremony-player-container", async (element: any) => {
-        if (!honored && window.DataStore.get("Auto-Honor-V2")) {
-            honored = true
-            await main(window.DataStore.get("Auto-Honor-V2-Mode"))
-        }
+        log("Honor screen detected.")
+
+        await main("V1")
+    })
+
+    upl.observer.subscribeToElementCreation(".vote-ceremony-v3-player-container", async (element: any) => {
+        log("Honor screen V3 detected.")
+
+        await main("V3")
     })
 }
 
