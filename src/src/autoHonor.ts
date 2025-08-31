@@ -72,13 +72,51 @@ class AutoHonor extends FetchData {
         honorCard.click();
     }
 
-    honor = async (cards: Element[]) => {
+    getHonorCards = (mode: number, type: string): Element[] => {
+        if (type === "V3") {
+            if (mode === 0) {
+                return [
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-component.team-1")),
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-component.team-2"))
+                ];
+            } 
+            else if (mode === 1) {
+                return [
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-component.team-2")),
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-component.team-1"))
+                ];
+            }
+        } 
+        else {
+            if (mode === 0) {
+                return [
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-1")),
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-2"))
+                ];
+            } 
+            else if (mode === 1) {
+                return [
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-2")),
+                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-1"))
+                ];
+            }
+        }
+        return [];
+    };
+
+    honor = async (mode: number, type: string) => {
         let failedTime = 0
+        let successTime = 0
+
         for (let i = 0; i < this.votesTime; i++) {
             try {
                 await utils.stop(150)
-                const honorCards = cards
+                const honorCards = this.getHonorCards(mode, type)
+
+                log(honorCards)
+
                 this.honorPlayerManually(honorCards[i])
+                successTime = successTime + 1
             }
             catch (err) {
                 if (failedTime > 100) break
@@ -89,36 +127,15 @@ class AutoHonor extends FetchData {
                 error("Failed to honor:", err)
             }
         }
+
+        window.Toast.success(`Auto honored ${successTime} player!`);
     }
 
-    getHonorCards = (mode: number, type: string): Element[] => {
-        if (type === "V3") {
-            if (mode === 0) {
-                return [
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-card.team-1")),
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-card.team-2"))
-                ];
-            } else if (mode === 1) {
-                return [
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-card.team-2")),
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-v3-player-card.team-1"))
-                ];
-            }
-        } else {
-            if (mode === 0) {
-                return [
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-1")),
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-2"))
-                ];
-            } else if (mode === 1) {
-                return [
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-2")),
-                    ...Array.from(document.querySelectorAll(".vote-ceremony-player-card.team-1"))
-                ];
-            }
+    skipHonor = (element: any) => {
+        if (window.DataStore.get("Auto-Honor-V2") && window.DataStore.get("Auto-Honor-V2_skipHonor")) {
+            element.click();
         }
-        return [];
-    };
+    }
 
     main = async (mode: number, type: string) => {
         if (this.honored.length !== 0) return;
@@ -127,16 +144,12 @@ class AutoHonor extends FetchData {
             case 0:
                 log("Honoring allies..");
 
-                this.honor(this.getHonorCards(mode, type));
-
-                window.Toast.success(`Auto honored ${this.votesTime} player!`);
+                this.honor(mode, type);
                 break;
             case 1:
                 log("Honoring enemy...");
 
-                this.honor(this.getHonorCards(mode, type));
-                
-                window.Toast.success(`Auto honored ${this.votesTime} player!`);
+                this.honor(mode, type);
                 break;
             default:
                 log("Auto honor V2 is turn off.");

@@ -68,11 +68,20 @@ class Settings {
                         )
                     ]),
                 ]),
-                UI.CheckBox("Auto honor players", "autohv2", "autohv2box", () => {}, true, "Auto-Honor-V2"),
+                UI.CheckBox("Auto honor players", "autohv2", "autohv2box", () => {
+                    let skipHonorCheckbox = document.getElementById("autohv2_skip") as HTMLInputElement
+                    if (window.DataStore.get("Auto-Honor-V2")) {
+                        skipHonorCheckbox.style.display = "flex"
+                    } 
+                    else {
+                        skipHonorCheckbox.style.display = "none"
+                    }
+                }, true, "Auto-Honor-V2"),
                 document.createElement('br'),
                 UI.Dropdown(option, "Auto-Honor-V2-Mode", "Auto honor list", "type", "id"),
                 document.createElement('br'),
-                UI.Label("", "auto-honor-v2-warning_1")
+                UI.Label("", "auto-honor-v2-warning_1"),
+                UI.CheckBox("Skip honor", "autohv2_skip", "autohv2_skipbox", () => {}, true, "Auto-Honor-V2_skipHonor"),
             ])
         )
     }
@@ -89,6 +98,14 @@ class Settings {
 
                     if (plugin && mutations.some((record) => Array.from(record.addedNodes).includes(plugin))) {
                         this.settingsUI(plugin)
+
+                        let skipHonorCheckbox = document.getElementById("autohv2_skip") as HTMLInputElement
+                        if (window.DataStore.get("Auto-Honor-V2")) {
+                            skipHonorCheckbox.style.display = "flex"
+                        } 
+                        else {
+                            skipHonorCheckbox.style.display = "none"
+                        }
                     }
                 }).observe(manager, {
                     childList: true,
