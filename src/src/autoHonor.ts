@@ -109,22 +109,27 @@ class AutoHonor extends FetchData {
         let successTime = 0
 
         for (let i = 0; i < this.votesTime; i++) {
+            await utils.stop(150);
+            let honorCards = this.getHonorCards(mode, type);
+
             try {
-                await utils.stop(150)
-                const honorCards = this.getHonorCards(mode, type)
+                if (honorCards[i]) {
+                    this.honorPlayerManually(honorCards[i]);
+                    successTime++;
+                } 
+                else {
+                    const altType = type == "V3" ? "V1" : "V3";
+                    const altHonorCards = this.getHonorCards(mode, altType);
 
-                log(honorCards)
-
-                this.honorPlayerManually(honorCards[i])
-                successTime = successTime + 1
-            }
+                    this.honorPlayerManually(altHonorCards[i]);
+                    successTime++;
+                }
+            } 
             catch (err) {
-                if (failedTime > 100) break
-                
-                failedTime = failedTime + 1
-                i = i - 1
+                failedTime++;
+                error("Failed to honor:", err);
 
-                error("Failed to honor:", err)
+                if (failedTime > 100) break;
             }
         }
 
